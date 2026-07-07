@@ -94,6 +94,9 @@ class ClubHandler(BaseHTTPRequestHandler):
         if route == "/app.js":
             self._send_file(STATIC / "app.js", "application/javascript; charset=utf-8")
             return
+        if route == "/engine.js":
+            self._send_file(STATIC / "engine.js", "application/javascript; charset=utf-8")
+            return
         if route == "/styles.css":
             self._send_file(STATIC / "styles.css", "text/css; charset=utf-8")
             return
