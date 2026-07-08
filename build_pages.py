@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build static site in docs/ for GitHub Pages."""
+"""Build static site for GitHub Pages (docs/ and repo root)."""
 
 from __future__ import annotations
 
@@ -29,11 +29,12 @@ from tag_quiz import TOP_LEVEL
 
 BASE = Path(__file__).parent
 DOCS = BASE / "docs"
+ROOT = BASE
 STATIC = BASE / "static"
+SITE_FILES = ("index.html", "styles.css", "app.js", "engine.js")
 
 
-def build_pages() -> Path:
-    data_dir = DOCS / "data"
+def _write_data(data_dir: Path) -> None:
     data_dir.mkdir(parents=True, exist_ok=True)
 
     clubs = load_clubs()
@@ -84,8 +85,10 @@ def build_pages() -> Path:
         json.dumps(site_payload, ensure_ascii=False, indent=2), encoding="utf-8"
     )
 
-    if DOCS.exists():
-        for item in DOCS.iterdir():
+
+def _deploy_docs(target: Path, data_dir: Path) -> None:
+    if target.exists():
+        for item in target.iterdir():
             if item.name == "data":
                 continue
             if item.is_dir():
@@ -93,24 +96,46 @@ def build_pages() -> Path:
             else:
                 item.unlink()
     else:
-        DOCS.mkdir()
+        target.mkdir(parents=True)
 
-    for name in ("index.html", "styles.css", "app.js", "engine.js"):
-        shutil.copy2(STATIC / name, DOCS / name)
+    for name in SITE_FILES:
+        shutil.copy2(STATIC / name, target / name)
 
-    (DOCS / ".nojekyll").touch()
+    (target / ".nojekyll").touch()
+    _ensure_engine_script(target / "index.html")
 
-    index = (DOCS / "index.html").read_text(encoding="utf-8")
+
+def _deploy_root(target: Path, data_dir: Path) -> None:
+    for name in SITE_FILES:
+        shutil.copy2(STATIC / name, target / name)
+
+    data_target = target / "data"
+    if data_target.exists():
+        shutil.rmtree(data_target)
+    shutil.copytree(data_dir, data_target)
+
+    (target / ".nojekyll").touch()
+    _ensure_engine_script(target / "index.html")
+
+
+def _ensure_engine_script(index_path: Path) -> None:
+    index = index_path.read_text(encoding="utf-8")
     if "engine.js" not in index:
         index = index.replace(
             '<script src="app.js"></script>',
             '<script src="engine.js"></script>\n  <script src="app.js"></script>',
         )
-        (DOCS / "index.html").write_text(index, encoding="utf-8")
+        index_path.write_text(index, encoding="utf-8")
 
+
+def build_pages() -> Path:
+    data_dir = DOCS / "data"
+    _write_data(data_dir)
+    _deploy_docs(DOCS, data_dir)
+    _deploy_root(ROOT, data_dir)
     return DOCS
 
 
 if __name__ == "__main__":
     path = build_pages()
-    print(f"Built GitHub Pages site at {path}")
+    print(f"Built GitHub Pages site at {path} and repo root")

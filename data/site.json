@@ -1,0 +1,599 @@
+{
+  "config": {
+    "CLUB_TAG_POINTS": 20,
+    "USER_TAG_POINTS": 20,
+    "MAX_USER_TAGS": 10,
+    "HIERARCHY_EXACT": 1.0,
+    "HIERARCHY_PARENT_CHILD": 0.5,
+    "HIERARCHY_GRANDRELATED": 0.25,
+    "NONE_TAG_WEIGHT_MULTIPLIER": 0.7,
+    "MIN_ACTIVE_MEMBER_COUNT": 3,
+    "MIN_FINAL_SCORE": 0.5,
+    "MIN_RESULTS": 5,
+    "TOP_N_RESULTS": 10,
+    "SIMILARITY_PRECISION_WEIGHT": 0.7,
+    "SIMILARITY_RECALL_WEIGHT": 0.3,
+    "POPULARITY_TIERS": [
+      [
+        51,
+        1.3
+      ],
+      [
+        31,
+        1.21
+      ],
+      [
+        21,
+        1.12
+      ],
+      [
+        11,
+        1.06
+      ],
+      [
+        0,
+        1.0
+      ]
+    ]
+  },
+  "parentMap": {
+    "STEM": null,
+    "math": "STEM",
+    "biology": "STEM",
+    "chemistry": "STEM",
+    "physics": "STEM",
+    "astronomy": "STEM",
+    "medicine": "STEM",
+    "environment": "STEM",
+    "experiments": "STEM",
+    "research": "STEM",
+    "engineering": "STEM",
+    "robotics": "engineering",
+    "aerospace": "engineering",
+    "drones": "engineering",
+    "hands_on": "engineering",
+    "computer_science": "STEM",
+    "programming": "computer_science",
+    "algorithms": "computer_science",
+    "web_development": "computer_science",
+    "game_development": "computer_science",
+    "cybersecurity": "computer_science",
+    "data_science": "computer_science",
+    "AI": "computer_science",
+    "machine_learning": "AI",
+    "technology": "STEM",
+    "social_sciences": null,
+    "economics": "social_sciences",
+    "psychology": "social_sciences",
+    "anthropology": "social_sciences",
+    "politics": "social_sciences",
+    "linguistics": "social_sciences",
+    "debate": "social_sciences",
+    "law": "social_sciences",
+    "humanities": null,
+    "philosophy": "humanities",
+    "history": "humanities",
+    "literature": "humanities",
+    "writing": "humanities",
+    "academic": "humanities",
+    "business": null,
+    "finance": "business",
+    "investment": "business",
+    "entrepreneurship": "business",
+    "creative_arts": null,
+    "visual_arts": "creative_arts",
+    "photography": "creative_arts",
+    "design": "creative_arts",
+    "fashion": "creative_arts",
+    "craftsmanship": "creative_arts",
+    "performing_arts": null,
+    "music": "performing_arts",
+    "dance": "performing_arts",
+    "theater": "performing_arts",
+    "media": null,
+    "film": "media",
+    "journalism": "media",
+    "anime": "media",
+    "sports": null,
+    "fitness": "sports",
+    "team_sports": "sports",
+    "racquet_sports": "sports",
+    "martial_arts": "sports",
+    "outdoor_sports": "sports",
+    "winter_sports": "sports",
+    "water_sports": "sports",
+    "volunteer": null,
+    "teaching": "volunteer",
+    "charity": "volunteer",
+    "community_service": "volunteer",
+    "animal_welfare": "volunteer",
+    "peer_support": "volunteer",
+    "health": null,
+    "mental_health": "health",
+    "wellness": "health",
+    "nutrition": "health",
+    "gaming": null,
+    "board_games": "gaming",
+    "strategy": "gaming",
+    "culture": null,
+    "chinese_culture": "culture",
+    "language_learning": "culture",
+    "hobbies": null,
+    "competition": null,
+    "academic_support": null
+  },
+  "tagTree": {
+    "STEM": {
+      "math": {},
+      "biology": {},
+      "chemistry": {},
+      "physics": {},
+      "astronomy": {},
+      "medicine": {},
+      "environment": {},
+      "experiments": {},
+      "research": {},
+      "engineering": {
+        "robotics": {},
+        "aerospace": {},
+        "drones": {},
+        "hands_on": {}
+      },
+      "computer_science": {
+        "programming": {},
+        "algorithms": {},
+        "web_development": {},
+        "game_development": {},
+        "cybersecurity": {},
+        "data_science": {},
+        "AI": {
+          "machine_learning": {}
+        }
+      },
+      "technology": {}
+    },
+    "social_sciences": {
+      "economics": {},
+      "psychology": {},
+      "anthropology": {},
+      "politics": {},
+      "linguistics": {},
+      "debate": {},
+      "law": {}
+    },
+    "humanities": {
+      "philosophy": {},
+      "history": {},
+      "literature": {},
+      "writing": {},
+      "academic": {}
+    },
+    "business": {
+      "finance": {},
+      "investment": {},
+      "entrepreneurship": {}
+    },
+    "creative_arts": {
+      "visual_arts": {},
+      "photography": {},
+      "design": {},
+      "fashion": {},
+      "craftsmanship": {}
+    },
+    "performing_arts": {
+      "music": {},
+      "dance": {},
+      "theater": {}
+    },
+    "media": {
+      "film": {},
+      "journalism": {},
+      "anime": {}
+    },
+    "sports": {
+      "fitness": {},
+      "team_sports": {},
+      "racquet_sports": {},
+      "martial_arts": {},
+      "outdoor_sports": {},
+      "winter_sports": {},
+      "water_sports": {}
+    },
+    "volunteer": {
+      "teaching": {},
+      "charity": {},
+      "community_service": {},
+      "animal_welfare": {},
+      "peer_support": {}
+    },
+    "health": {
+      "mental_health": {},
+      "wellness": {},
+      "nutrition": {}
+    },
+    "gaming": {
+      "board_games": {},
+      "strategy": {}
+    },
+    "culture": {
+      "chinese_culture": {},
+      "language_learning": {}
+    },
+    "hobbies": {},
+    "competition": {},
+    "academic_support": {}
+  },
+  "topLevel": {
+    "academic": {
+      "label": "Academic & Learning",
+      "prompt": "Which academic areas appeal to you? (choose one or more)",
+      "branches": [
+        "STEM",
+        "humanities",
+        "social_sciences",
+        "business",
+        "academic_support"
+      ]
+    },
+    "sports": {
+      "label": "Sports & Fitness",
+      "prompt": "What kind of sports interest you? (choose one or more)",
+      "branches": [
+        "sports"
+      ]
+    },
+    "social": {
+      "label": "Social, Arts & Lifestyle",
+      "prompt": "Which social or creative areas fit you? (choose one or more)",
+      "branches": [
+        "creative_arts",
+        "performing_arts",
+        "media",
+        "volunteer",
+        "health",
+        "gaming",
+        "culture",
+        "hobbies",
+        "competition"
+      ]
+    }
+  },
+  "tags": [
+    {
+      "id": "academic",
+      "label": "Academic"
+    },
+    {
+      "id": "academic_support",
+      "label": "Academic Support"
+    },
+    {
+      "id": "aerospace",
+      "label": "Aerospace"
+    },
+    {
+      "id": "AI",
+      "label": "AI"
+    },
+    {
+      "id": "algorithms",
+      "label": "Algorithms"
+    },
+    {
+      "id": "animal_welfare",
+      "label": "Animal Welfare"
+    },
+    {
+      "id": "anime",
+      "label": "Anime"
+    },
+    {
+      "id": "anthropology",
+      "label": "Anthropology"
+    },
+    {
+      "id": "astronomy",
+      "label": "Astronomy"
+    },
+    {
+      "id": "biology",
+      "label": "Biology"
+    },
+    {
+      "id": "board_games",
+      "label": "Board Games"
+    },
+    {
+      "id": "business",
+      "label": "Business"
+    },
+    {
+      "id": "charity",
+      "label": "Charity"
+    },
+    {
+      "id": "chemistry",
+      "label": "Chemistry"
+    },
+    {
+      "id": "chinese_culture",
+      "label": "Chinese Culture"
+    },
+    {
+      "id": "community_service",
+      "label": "Community Service"
+    },
+    {
+      "id": "competition",
+      "label": "Competition"
+    },
+    {
+      "id": "computer_science",
+      "label": "Computer Science"
+    },
+    {
+      "id": "craftsmanship",
+      "label": "Craftsmanship"
+    },
+    {
+      "id": "creative_arts",
+      "label": "Creative Arts"
+    },
+    {
+      "id": "culture",
+      "label": "Culture"
+    },
+    {
+      "id": "cybersecurity",
+      "label": "Cybersecurity"
+    },
+    {
+      "id": "dance",
+      "label": "Dance"
+    },
+    {
+      "id": "data_science",
+      "label": "Data Science"
+    },
+    {
+      "id": "debate",
+      "label": "Debate"
+    },
+    {
+      "id": "design",
+      "label": "Design"
+    },
+    {
+      "id": "drones",
+      "label": "Drones"
+    },
+    {
+      "id": "economics",
+      "label": "Economics"
+    },
+    {
+      "id": "engineering",
+      "label": "Engineering"
+    },
+    {
+      "id": "entrepreneurship",
+      "label": "Entrepreneurship"
+    },
+    {
+      "id": "environment",
+      "label": "Environment"
+    },
+    {
+      "id": "experiments",
+      "label": "Experiments"
+    },
+    {
+      "id": "fashion",
+      "label": "Fashion"
+    },
+    {
+      "id": "film",
+      "label": "Film"
+    },
+    {
+      "id": "finance",
+      "label": "Finance"
+    },
+    {
+      "id": "fitness",
+      "label": "Fitness"
+    },
+    {
+      "id": "game_development",
+      "label": "Game Development"
+    },
+    {
+      "id": "gaming",
+      "label": "Gaming"
+    },
+    {
+      "id": "hands_on",
+      "label": "Hands On"
+    },
+    {
+      "id": "health",
+      "label": "Health"
+    },
+    {
+      "id": "history",
+      "label": "History"
+    },
+    {
+      "id": "hobbies",
+      "label": "Hobbies"
+    },
+    {
+      "id": "humanities",
+      "label": "Humanities"
+    },
+    {
+      "id": "investment",
+      "label": "Investment"
+    },
+    {
+      "id": "journalism",
+      "label": "Journalism"
+    },
+    {
+      "id": "language_learning",
+      "label": "Language Learning"
+    },
+    {
+      "id": "law",
+      "label": "Law"
+    },
+    {
+      "id": "linguistics",
+      "label": "Linguistics"
+    },
+    {
+      "id": "literature",
+      "label": "Literature"
+    },
+    {
+      "id": "machine_learning",
+      "label": "Machine Learning"
+    },
+    {
+      "id": "martial_arts",
+      "label": "Martial Arts"
+    },
+    {
+      "id": "math",
+      "label": "Math"
+    },
+    {
+      "id": "media",
+      "label": "Media"
+    },
+    {
+      "id": "medicine",
+      "label": "Medicine"
+    },
+    {
+      "id": "mental_health",
+      "label": "Mental Health"
+    },
+    {
+      "id": "music",
+      "label": "Music"
+    },
+    {
+      "id": "nutrition",
+      "label": "Nutrition"
+    },
+    {
+      "id": "outdoor_sports",
+      "label": "Outdoor Sports"
+    },
+    {
+      "id": "peer_support",
+      "label": "Peer Support"
+    },
+    {
+      "id": "performing_arts",
+      "label": "Performing Arts"
+    },
+    {
+      "id": "philosophy",
+      "label": "Philosophy"
+    },
+    {
+      "id": "photography",
+      "label": "Photography"
+    },
+    {
+      "id": "physics",
+      "label": "Physics"
+    },
+    {
+      "id": "politics",
+      "label": "Politics"
+    },
+    {
+      "id": "programming",
+      "label": "Programming"
+    },
+    {
+      "id": "psychology",
+      "label": "Psychology"
+    },
+    {
+      "id": "racquet_sports",
+      "label": "Racquet Sports"
+    },
+    {
+      "id": "research",
+      "label": "Research"
+    },
+    {
+      "id": "robotics",
+      "label": "Robotics"
+    },
+    {
+      "id": "social_sciences",
+      "label": "Social Sciences"
+    },
+    {
+      "id": "sports",
+      "label": "Sports"
+    },
+    {
+      "id": "STEM",
+      "label": "STEM"
+    },
+    {
+      "id": "strategy",
+      "label": "Strategy"
+    },
+    {
+      "id": "teaching",
+      "label": "Teaching"
+    },
+    {
+      "id": "team_sports",
+      "label": "Team Sports"
+    },
+    {
+      "id": "technology",
+      "label": "Technology"
+    },
+    {
+      "id": "theater",
+      "label": "Theater"
+    },
+    {
+      "id": "visual_arts",
+      "label": "Visual Arts"
+    },
+    {
+      "id": "volunteer",
+      "label": "Volunteer"
+    },
+    {
+      "id": "water_sports",
+      "label": "Water Sports"
+    },
+    {
+      "id": "web_development",
+      "label": "Web Development"
+    },
+    {
+      "id": "wellness",
+      "label": "Wellness"
+    },
+    {
+      "id": "winter_sports",
+      "label": "Winter Sports"
+    },
+    {
+      "id": "writing",
+      "label": "Writing"
+    }
+  ]
+}
