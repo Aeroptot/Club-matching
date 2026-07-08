@@ -8,6 +8,7 @@ from pathlib import Path
 
 from config import (
     CLUB_TAG_POINTS,
+    EXCLUDED_CLUB_NOS,
     MAX_USER_TAGS,
     MEETING_PERIODS,
     METADATA_COLUMNS,
@@ -105,7 +106,11 @@ def normalize_tag(tag: str) -> str:
     return lower
 
 
-def distribute_user_weights(tags: list[str], total: int = USER_TAG_POINTS) -> dict[str, int]:
+def distribute_user_weights(
+    tags: list[str],
+    weight_mults: dict[str, float] | None = None,
+    total: int = USER_TAG_POINTS,
+) -> dict[str, int]:
     if not tags:
         return {}
     if len(tags) > MAX_USER_TAGS:
@@ -115,7 +120,13 @@ def distribute_user_weights(tags: list[str], total: int = USER_TAG_POINTS) -> di
     weights = [round(total * w / raw_sum) for w in raw]
     diff = total - sum(weights)
     weights[0] += diff
-    return dict(zip(tags, weights))
+    mults = weight_mults or {}
+    scaled: dict[str, int] = {}
+    for tag, weight in zip(tags, weights):
+        scaled[tag] = max(0, round(weight * mults.get(tag, 1.0)))
+    if sum(scaled.values()) == 0 and tags:
+        scaled[tags[0]] = 1
+    return scaled
 
 
 def popularity_multiplier(member_count: int) -> float:
@@ -134,6 +145,8 @@ def load_clubs(csv_path: Path | None = None) -> list[Club]:
         tag_columns = [c for c in reader.fieldnames or [] if c not in METADATA_COLUMNS]
 
         for row in reader:
+            if row["no"] in EXCLUDED_CLUB_NOS:
+                continue
             tags = {tag: int(row[tag]) for tag in tag_columns if int(row[tag]) > 0}
             clubs.append(
                 Club(
@@ -285,12 +298,14 @@ def recommend(
     blocked_periods: list[str] | None = None,
     min_score: float = MIN_FINAL_SCORE,
     min_results: int = MIN_RESULTS,
+    tag_weight_mults: dict[str, float] | None = None,
 ) -> list[Recommendation]:
     if clubs is None:
         clubs = load_clubs()
 
     normalized = [normalize_tag(t) for t in user_tag_names]
-    user_tags = distribute_user_weights(normalized)
+    mults = {normalize_tag(k): v for k, v in (tag_weight_mults or {}).items()}
+    user_tags = distribute_user_weights(normalized, mults)
     eligible = filter_clubs(clubs, blocked_slots, blocked_periods)
 
     results = [score_club(club, user_tags) for club in eligible]

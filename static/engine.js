@@ -75,13 +75,19 @@ const ClubMatcher = (() => {
     return lower;
   }
 
-  function distributeUserWeights(tags) {
+  function distributeUserWeights(tags, weightMults = {}) {
     const total = CFG.USER_TAG_POINTS;
     const raw = tags.map((_, i) => tags.length - i);
     const rawSum = raw.reduce((a, b) => a + b, 0);
     const weights = raw.map((w) => Math.round((total * w) / rawSum));
     weights[0] += total - weights.reduce((a, b) => a + b, 0);
-    return Object.fromEntries(tags.map((t, i) => [t, weights[i]]));
+    const scaled = Object.fromEntries(
+      tags.map((t, i) => [t, Math.max(0, Math.round(weights[i] * (weightMults[t] ?? 1)))])
+    );
+    if (Object.values(scaled).reduce((a, b) => a + b, 0) === 0 && tags.length) {
+      scaled[tags[0]] = 1;
+    }
+    return scaled;
   }
 
   function popularityMultiplier(memberCount) {
@@ -165,9 +171,12 @@ const ClubMatcher = (() => {
     return { club, similarity, finalScore, pop, matches };
   }
 
-  function recommend(tagNames, blockedSlots) {
+  function recommend(tagNames, blockedSlots, tagWeightMults = {}) {
     const normalized = tagNames.map(normalizeTag);
-    const userTags = distributeUserWeights(normalized);
+    const mults = Object.fromEntries(
+      Object.entries(tagWeightMults).map(([k, v]) => [normalizeTag(k), v])
+    );
+    const userTags = distributeUserWeights(normalized, mults);
     const eligible = filterClubs(blockedSlots);
     const results = eligible
       .map((club) => scoreClub(club, userTags))
@@ -217,6 +226,13 @@ const ClubMatcher = (() => {
       branch_queue: [...s.branch_queue],
       drill_extra: [...s.drill_extra],
       pending_drill_nodes: [...(s.pending_drill_nodes || [])],
+    };
+  }
+
+  function tagAdded(tag, fromNone = false) {
+    return {
+      tag,
+      weight_mult: fromNone ? CFG.NONE_TAG_WEIGHT_MULTIPLIER : 1,
     };
   }
 
@@ -341,7 +357,7 @@ const ClubMatcher = (() => {
     const drillDeeper = [];
     selections.forEach((sel) => {
       if (children(sel).length) drillDeeper.push(sel);
-      else tagsAdded.push(sel);
+      else tagsAdded.push(tagAdded(sel));
     });
 
     if (drillDeeper.length) {
@@ -365,7 +381,9 @@ const ClubMatcher = (() => {
         return { session, tags_added: [] };
       }
       if (session.phase === "branches") return advanceToNextArea(session, []);
-      if (session.phase === "drill") return startNextPendingDrill(session, [drillNode(session)]);
+      if (session.phase === "drill") {
+        return startNextPendingDrill(session, [tagAdded(drillNode(session), true)]);
+      }
     }
 
     if (session.phase === "root") {
@@ -422,8 +440,8 @@ const ClubMatcher = (() => {
     return { tags: tagList, max_tags: CFG.MAX_USER_TAGS };
   }
 
-  function recommendPayload(tagNames, blockedSlots) {
-    const results = recommend(tagNames, blockedSlots);
+  function recommendPayload(tagNames, blockedSlots, tagWeightMults = {}) {
+    const results = recommend(tagNames, blockedSlots, tagWeightMults);
     const above = results.filter((r) => r.above_threshold).length;
     return {
       count: results.length,

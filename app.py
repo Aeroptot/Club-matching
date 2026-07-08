@@ -181,8 +181,14 @@ class ClubHandler(BaseHTTPRequestHandler):
                 )
                 return
 
+            tag_weights = data.get("tag_weights") or {}
+
             try:
-                results = recommend(tags, blocked_slots=blocked_slots)
+                results = recommend(
+                    tags,
+                    blocked_slots=blocked_slots,
+                    tag_weight_mults=tag_weights,
+                )
             except ValueError as exc:
                 self._send_json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
                 return

@@ -8,6 +8,7 @@ let staticMode = false;
 
 const state = {
   selectedTags: new Set(),
+  tagWeightMults: {},
   blockedSlots: new Set(),
   quizSession: null,
   quizPendingSelections: new Set(),
@@ -86,6 +87,7 @@ function updateSelectedDisplay() {
 
 function clearTags() {
   state.selectedTags.clear();
+  state.tagWeightMults = {};
   updateSelectedDisplay();
   clearError();
 }
@@ -93,20 +95,26 @@ function clearTags() {
 function toggleTag(tag) {
   if (state.selectedTags.has(tag)) {
     state.selectedTags.delete(tag);
+    delete state.tagWeightMults[tag];
   } else if (state.selectedTags.size < MAX_TAGS) {
     state.selectedTags.add(tag);
+    state.tagWeightMults[tag] = 1;
   }
   updateSelectedDisplay();
 }
 
 function addQuizTags(tags) {
   let addedAny = false;
-  for (const tag of tags) {
-    if (state.selectedTags.size >= MAX_TAGS) break;
+  for (const item of tags) {
+    const tag = typeof item === "string" ? item : item.tag;
+    const mult = typeof item === "string" ? 1 : item.weight_mult ?? 1;
+    if (state.selectedTags.size >= MAX_TAGS && !state.selectedTags.has(tag)) break;
     if (!state.selectedTags.has(tag)) {
       state.selectedTags.add(tag);
       addedAny = true;
     }
+    const existing = state.tagWeightMults[tag] ?? 1;
+    state.tagWeightMults[tag] = Math.max(existing, mult);
   }
   updateSelectedDisplay();
   if (tags.length && !addedAny && state.selectedTags.size >= MAX_TAGS) {
@@ -358,7 +366,9 @@ async function recommend() {
   }
 
   if (staticMode) {
-    renderResults(ClubMatcher.recommendPayload(tags, [...state.blockedSlots]));
+    renderResults(
+      ClubMatcher.recommendPayload(tags, [...state.blockedSlots], state.tagWeightMults)
+    );
     return;
   }
 
@@ -367,6 +377,7 @@ async function recommend() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       tags,
+      tag_weights: state.tagWeightMults,
       blocked_slots: [...state.blockedSlots],
     }),
   });

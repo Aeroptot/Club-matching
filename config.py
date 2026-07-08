@@ -6,10 +6,17 @@ USER_TAG_POINTS = 20
 MAX_USER_TAGS = 10
 
 # Hierarchy match coefficients (relationship strength).
+# Each step away from an exact match halves the weight (1.0 → 0.5 → 0.25).
 HIERARCHY_EXACT = 1.0
-HIERARCHY_PARENT_CHILD = 0.6
-HIERARCHY_GRANDRELATED = 0.3
+HIERARCHY_PARENT_CHILD = 0.5
+HIERARCHY_GRANDRELATED = 0.25
 HIERARCHY_UNRELATED = 0.0
+
+# Quiz "None" selections use the parent tag at this fraction of normal weight.
+NONE_TAG_WEIGHT_MULTIPLIER = 0.7
+
+# Clubs excluded from recommendations and data exports.
+EXCLUDED_CLUB_NOS = {"131"}
 
 # Similarity blend: Precision vs Recall.
 SIMILARITY_PRECISION_WEIGHT = 0.7

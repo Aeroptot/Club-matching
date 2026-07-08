@@ -4,9 +4,19 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from config import NONE_TAG_WEIGHT_MULTIPLIER
+
 from tag_hierarchy import TAG_TREE, display_name
 
 NONE_ID = "__none__"
+
+
+def tag_added(tag: str, *, from_none: bool = False) -> dict:
+    return {
+        "tag": tag,
+        "weight_mult": NONE_TAG_WEIGHT_MULTIPLIER if from_none else 1.0,
+    }
+
 
 TOP_LEVEL: dict[str, dict] = {
     "academic": {
@@ -217,7 +227,7 @@ def advance_quiz_continue(session: dict, selections: list[str]) -> tuple[dict, l
             return _advance_to_next_area(session, [])
         if phase == "drill":
             parent = _drill_node(session)
-            return _start_next_pending_drill(session, [parent])
+            return _start_next_pending_drill(session, [tag_added(parent, from_none=True)])
 
     if phase == "root":
         for area in selections:
@@ -253,14 +263,14 @@ def _drill_continue(session: dict, selections: list[str]) -> tuple[dict, list[st
         if sel not in valid:
             raise ValueError(f"Invalid selection: {sel}")
 
-    tags_added: list[str] = []
+    tags_added: list[dict] = []
     drill_deeper: list[str] = []
 
     for sel in selections:
         if _children(sel):
             drill_deeper.append(sel)
         else:
-            tags_added.append(sel)
+            tags_added.append(tag_added(sel))
 
     if drill_deeper:
         session["drill_extra"] = [drill_deeper[0]]

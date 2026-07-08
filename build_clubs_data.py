@@ -6,7 +6,7 @@ import csv
 import re
 from pathlib import Path
 
-from config import CLUB_TAG_POINTS, METADATA_COLUMNS, WEEKDAYS
+from config import CLUB_TAG_POINTS, EXCLUDED_CLUB_NOS, METADATA_COLUMNS, WEEKDAYS
 from generate_club_tags import CLUB_TAGS, TAG_VOCABULARY, parse_clubs
 
 BASE = Path(__file__).parent
@@ -148,6 +148,8 @@ def build_weighted_csv(
         writer.writeheader()
         for club in clubs:
             no = club["no"]
+            if no in EXCLUDED_CLUB_NOS:
+                continue
             weighted = club_weighted_tags(no)
             day, period = meeting_times.get(no, ("unknown", "unknown"))
             row = {

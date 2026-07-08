@@ -6,6 +6,8 @@ import json
 import re
 from pathlib import Path
 
+from config import EXCLUDED_CLUB_NOS
+
 BASE = Path(__file__).parent
 
 TAG_VOCABULARY = [
@@ -137,7 +139,6 @@ CLUB_TAGS: dict[str, list[str]] = {
     "127": ["academic_support", "competition"],
     "128": ["history", "academic_support"],
     "130": ["writing", "game_development", "creative_arts"],
-    "131": ["gaming", "history", "politics", "strategy"],
     "132": ["finance", "business", "competition"],
     "133": ["design", "visual_arts", "history", "creative_arts"],
     "134": ["finance", "investment", "economics", "business"],
@@ -361,7 +362,11 @@ def main() -> None:
     validate_tags()
     clubs = parse_clubs(BASE / "club-data.md")
 
-    missing = [c["no"] for c in clubs if c["no"] not in CLUB_TAGS]
+    missing = [
+        c["no"]
+        for c in clubs
+        if c["no"] not in CLUB_TAGS and c["no"] not in EXCLUDED_CLUB_NOS
+    ]
     if missing:
         raise SystemExit(f"Missing tag assignments for club numbers: {missing}")
 
@@ -372,6 +377,8 @@ def main() -> None:
         writer = csv.DictWriter(f, fieldnames=fieldnames, quoting=csv.QUOTE_MINIMAL)
         writer.writeheader()
         for club in clubs:
+            if club["no"] in EXCLUDED_CLUB_NOS:
+                continue
             row = {
                 "no": club["no"],
                 "name": club["name"],
